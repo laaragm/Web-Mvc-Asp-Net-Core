@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebMvc.Models;
+using WebMvc.Models.ViewModel;
 
 namespace WebMvc.Controllers
 {
 	public class HomeController : Controller
 	{
+		//IActionResult: Defines a contract that represents the result of an action method.
 		public IActionResult Index()
 		{
 			return View();
@@ -17,7 +19,7 @@ namespace WebMvc.Controllers
 
 		public IActionResult About()
 		{
-			ViewData["Message"] = "Your application description page.";
+			ViewData["Message"] = "Sales Web Mvc";
 
 			return View();
 		}
