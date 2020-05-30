@@ -10,7 +10,6 @@ using WebMvc.Models;
 
 namespace WebMvc.Controllers
 {
-    //CRUD
     public class DepartmentsController : Controller
     {
         private readonly WebMvcContext _context;
