@@ -21,6 +21,7 @@ namespace WebMvc.Services
 
 		public void Insert(Seller seller)
 		{
+			seller.Department = Context.Department.First();
 			Context.Add(seller);
 			Context.SaveChanges();
 		}
