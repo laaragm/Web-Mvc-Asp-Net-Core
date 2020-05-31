@@ -19,29 +19,43 @@ namespace WebMvc.Services
 			Context = context;
 		}
 
-		public List<Seller> FindAll() => Context.Seller.ToList();
+		//Db data accessing is a slow operation. Then, if the operation is synchronous the application is going
+		//to be blocked until the task is completed.
+		//Async operations are way better in these cases because the task is executed separately (asynchronously)
+		//and our application continues available (and executing). 
+		public async Task<List<Seller>> FindAllAsync()
+		{
+			return await Context.Seller.ToListAsync();
+		}
 
-		public void Insert(Seller seller)
+		public async Task InsertAsync(Seller seller)
 		{
 			Context.Add(seller);
-			Context.SaveChanges();
+			//We put async here because this is actually the operation that does some operations in the db. 
+			//The Add() operation specified above does everything in memory.
+			await Context.SaveChangesAsync();
 		}
 
 		//Eager loading is the process whereby a query for one type of entity also loads related entities as
 		//part of the query, so that we don't need to execute a separate query for related entities.
 		//Eager loading is achieved using the Include() method.
-		public Seller FindById(int id) => Context.Seller.Include(seller => seller.Department).FirstOrDefault(seller => seller.Id == id);
-
-		public void Remove(int id)
+		public async Task<Seller> FindByIdAsync(int id)
 		{
-			var seller = Context.Seller.Find(id);
-			Context.Seller.Remove(seller);
-			Context.SaveChanges();
+			return await Context.Seller
+										.Include(seller => seller.Department)
+										.FirstOrDefaultAsync(seller => seller.Id == id);
 		}
 
-		public void Update(Seller seller)
+		public async Task RemoveAsync(int id)
 		{
-			if (!Context.Seller.Any(x => x.Id == seller.Id))
+			var seller = await Context.Seller.FindAsync(id);
+			Context.Seller.Remove(seller);
+			await Context.SaveChangesAsync();
+		}
+
+		public async Task UpdateAsync(Seller seller)
+		{
+			if (! await Context.Seller.AnyAsync(x => x.Id == seller.Id))
 			{
 				throw new NotFoundException("Seller Id not found.");
 			}
@@ -49,7 +63,7 @@ namespace WebMvc.Services
 			try
 			{
 				Context.Update(seller);
-				Context.SaveChanges();
+				await Context.SaveChangesAsync();
 			}
 			//Layer Segregation
 			//This is important because our service layer cannot propagate an exception related to data access.

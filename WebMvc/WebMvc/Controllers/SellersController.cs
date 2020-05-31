@@ -25,18 +25,18 @@ namespace WebMvc.Controllers
 
         //When the controller receives a call, then we need to return an action (in this case, View() called
         //Index). To summarize, the controller forwarded a requisition to View().
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = SellerService.FindAll();
+            var list = await SellerService.FindAllAsync();
 
             //View is going to generate an IActionResult containing the list passed as argument 
             return View(list);
         }
 
         //Opens the form so we can registrate a new seller.
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = DepartmentService.FindAll();
+            var departments = await DepartmentService.FindAllAsync();
             var viewModel = new SellerFormViewModel { Departments = departments };
 
             return View(viewModel);
@@ -46,23 +46,23 @@ namespace WebMvc.Controllers
         [HttpPost]
         //In order to prevent our application from receiving CSRF attacks
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Seller seller)
+        public async Task<IActionResult> Create(Seller seller)
         {
             //In order to enable client-side validation even though JavaScript is disabled in the user's browser
             if (!ModelState.IsValid)
             {
-                var departments = DepartmentService.FindAll();
+                var departments = await DepartmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
                 return View(viewModel);
             }
 
-            SellerService.Insert(seller);
+            await SellerService.InsertAsync(seller);
 
             return RedirectToAction(nameof(Index));
         }
 
         //When the View() specified below is returned, the framework is going to search for a screen called Delete
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -70,7 +70,7 @@ namespace WebMvc.Controllers
             }
 
             //id.Value is necessary because our id might be null
-            var seller = SellerService.FindById(id.Value);
+            var seller = await SellerService.FindByIdAsync(id.Value);
 
             if (seller == null)
             {
@@ -82,21 +82,21 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            SellerService.Remove(id);
+            await SellerService.RemoveAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var seller = SellerService.FindById(id.Value);
+            var seller = await SellerService.FindByIdAsync(id.Value);
 
             if (seller == null)
             {
@@ -106,21 +106,21 @@ namespace WebMvc.Controllers
             return View(seller);
         }
 
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var seller = SellerService.FindById(id.Value);
+            var seller = await SellerService.FindByIdAsync(id.Value);
 
             if (seller == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
-            List<Department> departments = DepartmentService.FindAll();
+            List<Department> departments = await DepartmentService.FindAllAsync();
             SellerFormViewModel viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
 
             return View(viewModel);
@@ -128,13 +128,14 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
             //In order to enable client-side validation even though JavaScript is disabled in the user's browser
             if (!ModelState.IsValid)
             {
-                var departments = DepartmentService.FindAll();
+                var departments = await DepartmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+
                 return View(viewModel);
             }
 
@@ -145,7 +146,7 @@ namespace WebMvc.Controllers
 
             try
             {
-                SellerService.Update(seller);
+                await SellerService.UpdateAsync(seller);
 
                 return RedirectToAction(nameof(Index));
             }
