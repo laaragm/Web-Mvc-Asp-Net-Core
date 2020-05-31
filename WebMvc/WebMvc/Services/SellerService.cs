@@ -18,5 +18,11 @@ namespace WebMvc.Services
 		}
 
 		public List<Seller> FindAll() => Context.Seller.ToList();
+
+		public void Insert(Seller seller)
+		{
+			Context.Add(seller);
+			Context.SaveChanges();
+		}
 	}
 }

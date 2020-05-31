@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebMvc.Models;
 using WebMvc.Services;
 
 namespace WebMvc.Controllers
@@ -25,6 +26,22 @@ namespace WebMvc.Controllers
 
             //View is going to generate an IActionResult containing the list passed as argument 
             return View(list);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        //POST request
+        [HttpPost]
+        //In order to prevent our application from receiving CSRF attacks
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Seller seller)
+        {
+            SellerService.Insert(seller);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
