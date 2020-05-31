@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +58,7 @@ namespace WebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             //id.Value is necessary because our id might be null
@@ -65,7 +66,7 @@ namespace WebMvc.Controllers
 
             if (seller == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(seller);
@@ -84,14 +85,14 @@ namespace WebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var seller = SellerService.FindById(id.Value);
 
             if (seller == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(seller);
@@ -101,14 +102,14 @@ namespace WebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var seller = SellerService.FindById(id.Value);
 
             if (seller == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             List<Department> departments = DepartmentService.FindAll();
@@ -123,7 +124,7 @@ namespace WebMvc.Controllers
         {
             if (id != seller.Id)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
             }
 
             try
@@ -132,14 +133,26 @@ namespace WebMvc.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch (NotFoundException)
+            catch (NotFoundException exception)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = exception.Message });
             }
-            catch (DbConcurrencyException)
+            catch (DbConcurrencyException exception)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = exception.Message });
             }
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                //Gets internal id request
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+
+            return View(viewModel);
         }
     }
 }
