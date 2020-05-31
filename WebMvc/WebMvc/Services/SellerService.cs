@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using WebMvc.Data;
 using WebMvc.Models;
 using Microsoft.EntityFrameworkCore;
+using WebMvc.Services.Exceptions;
 
 namespace WebMvc.Services
 {
@@ -36,6 +37,29 @@ namespace WebMvc.Services
 			var seller = Context.Seller.Find(id);
 			Context.Seller.Remove(seller);
 			Context.SaveChanges();
+		}
+
+		public void Update(Seller seller)
+		{
+			if (!Context.Seller.Any(x => x.Id == seller.Id))
+			{
+				throw new NotFoundException("Seller Id not found.");
+			}
+
+			try
+			{
+				Context.Update(seller);
+				Context.SaveChanges();
+			}
+			//Layer Segregation
+			//This is important because our service layer cannot propagate an exception related to data access.
+			//If an exception occurs, our service layer is going to throw an exception from its own layer
+			//and our controller needs to deal only with exceptions related to the service layer.
+			//This is a way that we can respect the MVC architecture.
+			catch (DbUpdateConcurrencyException exception)
+			{
+				throw new DbConcurrencyException(exception.Message);
+			}
 		}
 	}
 }
