@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebMvc.Data;
 using WebMvc.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebMvc.Services
 {
@@ -25,7 +26,10 @@ namespace WebMvc.Services
 			Context.SaveChanges();
 		}
 
-		public Seller FindById(int id) => Context.Seller.FirstOrDefault(seller => seller.Id == id);
+		//Eager loading is the process whereby a query for one type of entity also loads related entities as
+		//part of the query, so that we don't need to execute a separate query for related entities.
+		//Eager loading is achieved using the Include() method.
+		public Seller FindById(int id) => Context.Seller.Include(seller => seller.Department).FirstOrDefault(seller => seller.Id == id);
 
 		public void Remove(int id)
 		{
