@@ -7,22 +7,20 @@ using WebMvc.Models;
 
 namespace WebMvc.Services
 {
-	public class SellerService
+	public class DepartmentService
 	{
 		private readonly WebMvcContext Context;
 
 		//DI
-		public SellerService(WebMvcContext context)
+		public DepartmentService(WebMvcContext context)
 		{
 			Context = context;
 		}
 
-		public List<Seller> FindAll() => Context.Seller.ToList();
-
-		public void Insert(Seller seller)
+		public List<Department> FindAll()
 		{
-			Context.Add(seller);
-			Context.SaveChanges();
+			//Returns all Departments ordered by name.
+			return Context.Department.OrderBy(x => x.Name).ToList();
 		}
 	}
 }
