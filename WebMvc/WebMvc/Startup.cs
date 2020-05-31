@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using WebMvc.Data;
+using WebMvc.Services;
 
 namespace WebMvc
 {
@@ -40,8 +41,9 @@ namespace WebMvc
 												builder => builder.MigrationsAssembly("WebMvc")));
 
 			//Registering the service in the Dependency Injection System of the application. 
-			//It allows our SeedingService to be injected into other services and the vice-versa. 
+			//It allows one Service to be injected into another and the vice-versa. 
 			services.AddScoped<SeedingService>();
+			services.AddScoped<SellerService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

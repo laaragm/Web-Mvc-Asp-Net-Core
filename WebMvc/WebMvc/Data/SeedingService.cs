@@ -10,7 +10,7 @@ namespace WebMvc.Data
 	public class SeedingService
 	{
 		//Implementing the service (registering a SeedingService dependency with our DbContext).
-		private WebMvcContext Context;
+		private readonly WebMvcContext Context;
 
 		//Dependency Injection Using Constructor.
 		public SeedingService(WebMvcContext context)
