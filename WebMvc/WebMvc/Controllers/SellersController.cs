@@ -48,6 +48,14 @@ namespace WebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Seller seller)
         {
+            //In order to enable client-side validation even though JavaScript is disabled in the user's browser
+            if (!ModelState.IsValid)
+            {
+                var departments = DepartmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
+
             SellerService.Insert(seller);
 
             return RedirectToAction(nameof(Index));
@@ -122,6 +130,14 @@ namespace WebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
+            //In order to enable client-side validation even though JavaScript is disabled in the user's browser
+            if (!ModelState.IsValid)
+            {
+                var departments = DepartmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
+
             if (id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
