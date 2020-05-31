@@ -24,5 +24,14 @@ namespace WebMvc.Services
 			Context.Add(seller);
 			Context.SaveChanges();
 		}
+
+		public Seller FindById(int id) => Context.Seller.FirstOrDefault(seller => seller.Id == id);
+
+		public void Remove(int id)
+		{
+			var seller = Context.Seller.Find(id);
+			Context.Seller.Remove(seller);
+			Context.SaveChanges();
+		}
 	}
 }

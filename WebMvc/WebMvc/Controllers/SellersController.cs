@@ -50,5 +50,33 @@ namespace WebMvc.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        //When the View() specified below is returned, the framework is going to search for a screen called Delete
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //id.Value is necessary because our id might be null
+            var seller = SellerService.FindById(id.Value);
+
+            if (seller == null)
+            {
+                return NotFound();
+            }
+
+            return View(seller);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            SellerService.Remove(id);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
